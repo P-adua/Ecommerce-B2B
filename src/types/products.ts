@@ -3,8 +3,9 @@ export interface Product {
   name: string;
   price: number;
   category: string;
-  stock: number;
+  stock?: number;
   image: string;
   description: string;
   minimumOrder?: number; // Diferencial B2B: pedido mínimo por atacado
+  sku?: string; // Código de referência do produto
 }

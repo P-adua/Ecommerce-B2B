@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useCartStore } from '../store/useCartStore';
+import { useCartStore, getVolumeDiscountPercent, getDiscountedUnitPrice } from '../store/useCartStore';
 import { CheckoutModal } from './CheckoutModal';
 import { useAuthStore } from '../store/useAuthStore';
 import { useThemeStore } from '../store/useThemeStore';
@@ -10,7 +10,7 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
-  const { items, removeFromCart, updateQuantity, totalPrice, clearCart } = useCartStore();
+  const { items, removeFromCart, updateQuantity, totalPrice, totalOriginalPrice, clearCart } = useCartStore();
   const { user, openLoginModal } = useAuthStore();
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
@@ -18,6 +18,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   if (!isOpen) return null;
+
+  const currentTotalPrice = totalPrice();
+  const originalPrice = totalOriginalPrice();
+  const totalSavings = originalPrice - currentTotalPrice;
 
   const handleOpenCheckout = () => {
     if (!user) {
@@ -57,58 +61,107 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 <p>O seu carrinho está vazio.</p>
               </div>
             ) : (
-              items.map((item) => (
-                <div key={item.id} className={`border p-3 rounded-xl flex gap-3 items-center ${
-                  isLight ? 'bg-zinc-50 border-zinc-200' : 'bg-zinc-950 border-zinc-800/80'
-                }`}>
-                  <img src={item.image} alt={item.name} className={`w-16 h-16 object-cover rounded-lg ${isLight ? 'bg-zinc-200' : 'bg-zinc-800'}`} />
-                  <div className="flex-1">
-                    <h4 className={`font-semibold text-sm line-clamp-1 ${isLight ? 'text-zinc-800' : 'text-zinc-200'}`}>{item.name}</h4>
-                    <span className={`text-xs font-bold ${isLight ? 'text-zinc-900' : 'text-emerald-400'}`}>
-                      {(item.price * item.quantity).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                    </span>
+              items.map((item) => {
+                const discountPercent = getVolumeDiscountPercent(item.quantity);
+                const unitPrice = getDiscountedUnitPrice(item.price, item.quantity);
+                const itemTotal = unitPrice * item.quantity;
 
-                    {/* Controles de Quantidade */}
-                    <div className="flex items-center gap-2 mt-2">
-                      <button 
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className={`text-xs px-2 py-0.5 rounded font-bold cursor-pointer border ${
-                          isLight ? 'bg-white border-zinc-300 text-zinc-700 hover:bg-zinc-100' : 'bg-zinc-800 border-transparent text-zinc-300 hover:bg-zinc-700'
-                        }`}
-                      >
-                        -
-                      </button>
-                      <span className="text-xs font-semibold">{item.quantity}</span>
-                      <button 
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className={`text-xs px-2 py-0.5 rounded font-bold cursor-pointer border ${
-                          isLight ? 'bg-white border-zinc-300 text-zinc-700 hover:bg-zinc-100' : 'bg-zinc-800 border-transparent text-zinc-300 hover:bg-zinc-700'
-                        }`}
-                      >
-                        +
-                      </button>
-                      <button 
-                        onClick={() => removeFromCart(item.id)}
-                        className="ml-auto text-xs text-red-500 hover:underline cursor-pointer font-medium"
-                      >
-                        Remover
-                      </button>
+                return (
+                  <div key={item.id} className={`border p-3 rounded-xl flex gap-3 items-center relative ${
+                    isLight ? 'bg-zinc-50 border-zinc-200' : 'bg-zinc-950 border-zinc-800/80'
+                  }`}>
+                    <img src={item.image} alt={item.name} className={`w-16 h-16 object-cover rounded-lg ${isLight ? 'bg-zinc-200' : 'bg-zinc-800'}`} />
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <h4 className={`font-semibold text-sm line-clamp-1 ${isLight ? 'text-zinc-800' : 'text-zinc-200'}`}>{item.name}</h4>
+                        {discountPercent > 0 && (
+                          <span className="text-[10px] font-bold bg-emerald-500 text-black px-1.5 py-0.5 rounded shadow">
+                            -{discountPercent}% OFF
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Exibição do Preço com Desconto Aplicado */}
+                      <div className="mt-1 flex items-center gap-2">
+                        <span className={`text-xs font-bold ${isLight ? 'text-zinc-900' : 'text-emerald-400'}`}>
+                          {itemTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                        </span>
+                        {discountPercent > 0 && (
+                          <span className="text-[10px] text-zinc-500 line-through">
+                            {(item.price * item.quantity).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Controles de Quantidade e Dica de Atacado */}
+                      <div className="flex items-center gap-2 mt-2">
+                        <button 
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className={`text-xs px-2 py-0.5 rounded font-bold cursor-pointer border ${
+                            isLight ? 'bg-white border-zinc-300 text-zinc-700 hover:bg-zinc-100' : 'bg-zinc-800 border-transparent text-zinc-300 hover:bg-zinc-700'
+                          }`}
+                        >
+                          -
+                        </button>
+                        <span className="text-xs font-semibold">{item.quantity}</span>
+                        <button 
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className={`text-xs px-2 py-0.5 rounded font-bold cursor-pointer border ${
+                            isLight ? 'bg-white border-zinc-300 text-zinc-700 hover:bg-zinc-100' : 'bg-zinc-800 border-transparent text-zinc-300 hover:bg-zinc-700'
+                          }`}
+                        >
+                          +
+                        </button>
+                        <button 
+                          onClick={() => removeFromCart(item.id)}
+                          className="ml-auto text-xs text-red-500 hover:underline cursor-pointer font-medium"
+                        >
+                          Remover
+                        </button>
+                      </div>
+
+                      {/* Dica do próximo nível de desconto */}
+                      {item.quantity < 5 && (
+                        <span className="text-[9px] text-emerald-500 block mt-1">
+                          💡 Adicione +{5 - item.quantity} para ganhar 5% de desconto B2B!
+                        </span>
+                      )}
+                      {item.quantity >= 5 && item.quantity < 10 && (
+                        <span className="text-[9px] text-emerald-500 block mt-1">
+                          💡 Adicione +{10 - item.quantity} para subir para 10% de desconto!
+                        </span>
+                      )}
+                      {item.quantity >= 10 && item.quantity < 20 && (
+                        <span className="text-[9px] text-emerald-500 block mt-1">
+                          💡 Adicione +{20 - item.quantity} para o desconto máximo de 15%!
+                        </span>
+                      )}
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
-          {/* Rodapé com Totais e Ações */}
+          {/* Rodapé com Totais e Economia */}
           {items.length > 0 && (
             <div className={`p-4 border-t space-y-3 ${isLight ? 'bg-zinc-50 border-zinc-200' : 'bg-zinc-950/50 border-zinc-800'}`}>
+              
+              {totalSavings > 0 && (
+                <div className="bg-emerald-950/40 border border-emerald-500/30 p-2 rounded-lg text-center">
+                  <span className="text-xs font-semibold text-emerald-400 block">
+                    🎉 Economia total B2B: {totalSavings.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </span>
+                </div>
+              )}
+
               <div className="flex justify-between items-center text-sm">
-                <span className={isLight ? 'text-zinc-600' : 'text-zinc-400'}>Subtotal do Pedido:</span>
+                <span className={isLight ? 'text-zinc-600' : 'text-zinc-400'}>Subtotal com Desconto:</span>
                 <span className={`text-lg font-black ${isLight ? 'text-zinc-900' : 'text-emerald-400'}`}>
-                  {totalPrice().toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  {currentTotalPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </span>
               </div>
+
               <div className="flex gap-2">
                 <button 
                   onClick={clearCart}

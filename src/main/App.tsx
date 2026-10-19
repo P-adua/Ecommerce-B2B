@@ -8,6 +8,7 @@ import { Header } from "../componentes/header";
 import { LoginModal } from "../componentes/LoginModal";
 import { CompanyProfileModal } from "../componentes/CompanyProfileModal";
 import { useThemeStore } from "../store/useThemeStore";
+import { QuickOrderModal } from "../componentes/QuickOrderModal";
 
 function App() {
   const { addToCart, totalItems } = useCartStore();
@@ -17,6 +18,7 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isQuickOrderOpen, setIsQuickOrderOpen] = useState(false);
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -106,6 +108,7 @@ function App() {
           onOpenProfile={() => setIsProfileOpen(true)}
           theme={theme}
           onToggleTheme={toggleTheme}
+          onOpenQuickOrder={() => setIsQuickOrderOpen(true)}
         />
       </div>
 
@@ -211,16 +214,21 @@ function App() {
                   </div>
 
                   <div className="p-5">
-                    {/* Badge da Categoria: Verde no claro, minimalista no escuro */}
-                    <span
-                      className={`text-[10px] uppercase tracking-widest font-bold px-2.5 py-1 rounded-md border ${
-                        isLight
-                          ? "bg-emerald-950/60 border-emerald-500/20 text-emerald-400"
-                          : "bg-zinc-900 border-zinc-800 text-zinc-400"
-                      }`}
-                    >
-                      {product.category}
-                    </span>
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={`text-[10px] uppercase tracking-widest font-bold px-2.5 py-1 rounded-md border ${
+                          isLight
+                            ? "bg-emerald-950/60 border-emerald-500/20 text-emerald-400"
+                            : "bg-zinc-900 border-zinc-800 text-zinc-400"
+                        }`}
+                      >
+                        {product.category}
+                      </span>
+                      <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/30">
+                        🔥 Até 15% OFF atacado
+                      </span>
+                    </div>
+
                     <h3
                       className={`font-semibold text-sm mt-3 leading-snug line-clamp-1 ${isLight ? "text-zinc-900" : "text-zinc-100"}`}
                     >
@@ -287,10 +295,15 @@ function App() {
         onRemoveFavorite={toggleFavorite}
         onAddToCart={addToCart}
       />
+
       <LoginModal />
       <CompanyProfileModal
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
+      />
+      <QuickOrderModal
+        isOpen={isQuickOrderOpen}
+        onClose={() => setIsQuickOrderOpen(false)}
       />
     </div>
   );

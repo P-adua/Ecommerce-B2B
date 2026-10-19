@@ -11,6 +11,7 @@ interface HeaderProps {
   onOpenProfile: () => void;
   theme: 'dark' | 'light';
   onToggleTheme: () => void;
+  onOpenQuickOrder: () => void; // 1. Adicionado aqui nas propriedades
 }
 
 export function Header({
@@ -26,6 +27,7 @@ export function Header({
   onOpenProfile,
   theme,
   onToggleTheme,
+  onOpenQuickOrder, // 2. Adicionado aqui nos parâmetros desestruturados
 }: HeaderProps) {
   const isLight = theme === 'light';
 
@@ -62,6 +64,17 @@ export function Header({
         {/* Ações */}
         <div className="flex items-center gap-3">
           
+          {/* Botão de Pedido Rápido (SKU) */}
+          <button 
+            onClick={onOpenQuickOrder}
+            className={`text-xs font-bold px-3 py-2.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 shadow-sm ${
+              isLight ? 'bg-zinc-100 border-zinc-300 text-zinc-800 hover:bg-zinc-200' : 'bg-zinc-900 border-zinc-800 text-emerald-400 hover:bg-zinc-800'
+            }`}
+            title="Compra Rápida por SKU"
+          >
+            <span>⚡</span> <span className="hidden sm:inline">Pedido SKU</span>
+          </button>
+
           {/* Botão de Tema Claro / Escuro */}
           <button 
             onClick={onToggleTheme}
@@ -70,7 +83,7 @@ export function Header({
                 ? 'bg-zinc-100 border-zinc-300 text-zinc-800 hover:bg-zinc-200' 
                 : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:bg-zinc-800'
             }`}
-            title={isLight ? 'Mudar para Tema Escuro' : 'Mudar para Tema Claro (Fashion Style)'}
+            title={isLight ? 'Mudar para Tema Escuro' : 'Mudar para Tema Claro'}
           >
             <span className="text-base">{isLight ? '🌙' : '☀️'}</span>
           </button>
