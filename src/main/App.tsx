@@ -9,8 +9,11 @@ import { LoginModal } from "../componentes/LoginModal";
 import { CompanyProfileModal } from "../componentes/CompanyProfileModal";
 import { useThemeStore } from "../store/useThemeStore";
 import { QuickOrderModal } from "../componentes/QuickOrderModal";
+import { useCompareStore } from "../store/useCompareStore";
+import { CompareModal } from "../componentes/CompareModal";
 
 function App() {
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
   const { addToCart, totalItems } = useCartStore();
   const { user, openLoginModal, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
@@ -19,6 +22,7 @@ function App() {
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isQuickOrderOpen, setIsQuickOrderOpen] = useState(false);
+  const { compareItems, addToCompare } = useCompareStore();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -109,6 +113,8 @@ function App() {
           theme={theme}
           onToggleTheme={toggleTheme}
           onOpenQuickOrder={() => setIsQuickOrderOpen(true)}
+          compareCount={compareItems.length}
+          onOpenCompare={() => setIsCompareOpen(true)}
         />
       </div>
 
@@ -172,10 +178,14 @@ function App() {
         </div>
 
         {/* Vitrine de Produtos */}
-        {/* Vitrine de Produtos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
             const isFavorited = favorites.includes(product.id);
+            // 👇 DECLARAÇÃO ADICIONADA AQUI DENTRO DO MAP
+            const isSelectedForCompare = compareItems.some(
+              (item) => item.id === product.id,
+            );
+
             return (
               <div
                 key={product.id}
@@ -243,7 +253,7 @@ function App() {
                 </div>
 
                 <div
-                  className={`p-5 pt-0 border-t mt-4 flex items-center justify-between ${isLight ? "border-zinc-100" : "border-zinc-800/60"}`}
+                  className={`p-5 pt-0 border-t mt-4 flex items-center justify-between gap-2 ${isLight ? "border-zinc-100" : "border-zinc-800/60"}`}
                 >
                   <div>
                     <span className="text-[10px] text-zinc-500 block uppercase tracking-wider">
@@ -259,17 +269,33 @@ function App() {
                     </span>
                   </div>
 
-                  {/* Botão Comprar: Verde destacado no claro, escuro sofisticado no escuro */}
-                  <button
-                    onClick={() => addToCart(product)}
-                    className={`text-xs font-bold px-4 py-2.5 rounded-xl transition-all duration-200 cursor-pointer ${
-                      isLight
-                        ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_4px_14px_rgba(16,185,129,0.2)]"
-                        : "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/60 shadow-sm"
-                    }`}
-                  >
-                    Comprar
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    {/* Botão Comprar */}
+                    <button
+                      onClick={() => addToCart(product)}
+                      className={`text-xs font-bold px-3 py-2 rounded-xl transition-all duration-200 cursor-pointer ${
+                        isLight
+                          ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_4px_14px_rgba(16,185,129,0.2)]"
+                          : "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/60 shadow-sm"
+                      }`}
+                    >
+                      Comprar
+                    </button>
+
+                    {/* Botão Comparar */}
+                    <button
+                      type="button"
+                      onClick={() => addToCompare(product)}
+                      className={`text-xs font-semibold px-2.5 py-2 rounded-xl border transition-all cursor-pointer ${
+                        isSelectedForCompare
+                          ? "bg-amber-500 text-black border-amber-600 font-bold"
+                          : "bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-700"
+                      }`}
+                      title="Comparar especificações técnicas"
+                    >
+                      {isSelectedForCompare ? "⚖️ Comparando" : "⚖️ Comparar"}
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -285,7 +311,6 @@ function App() {
           </div>
         )}
       </main>
-
       {/* Modais e Gavetas Globais */}
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       <FavoritesDrawer
@@ -304,6 +329,10 @@ function App() {
       <QuickOrderModal
         isOpen={isQuickOrderOpen}
         onClose={() => setIsQuickOrderOpen(false)}
+      />
+      <CompareModal
+        isOpen={isCompareOpen}
+        onClose={() => setIsCompareOpen(false)}
       />
     </div>
   );

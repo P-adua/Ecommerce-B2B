@@ -11,7 +11,9 @@ interface HeaderProps {
   onOpenProfile: () => void;
   theme: 'dark' | 'light';
   onToggleTheme: () => void;
-  onOpenQuickOrder: () => void; // 1. Adicionado aqui nas propriedades
+  onOpenQuickOrder: () => void;
+  compareCount: number;
+  onOpenCompare: () => void;
 }
 
 export function Header({
@@ -27,7 +29,9 @@ export function Header({
   onOpenProfile,
   theme,
   onToggleTheme,
-  onOpenQuickOrder, // 2. Adicionado aqui nos parâmetros desestruturados
+  onOpenQuickOrder,
+  compareCount,
+  onOpenCompare,
 }: HeaderProps) {
   const isLight = theme === 'light';
 
@@ -64,6 +68,25 @@ export function Header({
         {/* Ações */}
         <div className="flex items-center gap-3">
           
+          {/* Botão Comparar (Aparece somente quando houver itens selecionados) */}
+          {compareCount > 0 && (
+            <button
+              onClick={onOpenCompare}
+              className={`text-xs font-bold px-3 py-2.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 shadow-sm animate-in fade-in zoom-in-95 ${
+                isLight 
+                  ? 'bg-amber-50 border-amber-300 text-amber-800 hover:bg-amber-100' 
+                  : 'bg-amber-950/40 border-amber-500/50 text-amber-400 hover:bg-amber-900/50'
+              }`}
+              title="Comparar produtos selecionados"
+            >
+              <span>⚖️</span> 
+              <span className="hidden sm:inline">Comparar</span>
+              <span className="bg-amber-500 text-black text-[10px] font-black px-1.5 py-0.2 rounded-full">
+                {compareCount}
+              </span>
+            </button>
+          )}
+
           {/* Botão de Pedido Rápido (SKU) */}
           <button 
             onClick={onOpenQuickOrder}

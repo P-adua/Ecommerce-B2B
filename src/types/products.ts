@@ -1,11 +1,18 @@
 export interface Product {
   id: string;
+  sku?: string;
   name: string;
+  description: string;
   price: number;
   category: string;
-  stock?: number;
   image: string;
-  description: string;
-  minimumOrder?: number; // Diferencial B2B: pedido mínimo por atacado
-  sku?: string; // Código de referência do produto
+  stock?: number;
+  // Atributos técnicos para o comparador
+  warranty?: string;
+  specs?: {
+    interface?: string;
+    power?: string;
+    speed?: string;
+    type?: string;
+  };
 }

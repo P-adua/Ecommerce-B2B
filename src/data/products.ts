@@ -9,6 +9,8 @@ export const products: Product[] = [
     price: 1450.00,
     category: 'Redes',
     image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=600',
+    warranty: '3 Anos On-site',
+    specs: { interface: '24x Portas RJ45 GbE + 4x SFP+', power: 'Bivolt Automático', speed: '104 Gbps', type: 'Gerenciável L2+' }
   },
   {
     id: '2',
@@ -18,6 +20,8 @@ export const products: Product[] = [
     price: 780.50,
     category: 'Cabeamento',
     image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=600',
+    warranty: '1 Ano Fabricante',
+    specs: { interface: '100% Cobre Nu', power: 'N/A', speed: 'Até 1 Gbps / 250MHz', type: 'UTP Caixa 305m' }
   },
   {
     id: '3',
@@ -27,6 +31,8 @@ export const products: Product[] = [
     price: 320.00,
     category: 'Automação',
     image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=600',
+    warranty: '2 Anos',
+    specs: { interface: 'USB / Bluetooth', power: 'Alimentado por Porta', speed: '300 leituras/seg', type: 'Laser 2D Imager' }
   },
   {
     id: '4',
@@ -36,6 +42,8 @@ export const products: Product[] = [
     price: 1890.00,
     category: 'Energia',
     image: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&q=80&w=600',
+    warranty: '2 Anos Balcão',
+    specs: { interface: '6 Tomadas NBR 14136', power: '1500VA / 1050W', speed: 'Senoidal Pura', type: 'Interativo' }
   },
   {
     id: '5',
@@ -45,15 +53,8 @@ export const products: Product[] = [
     price: 920.00,
     category: 'Redes',
     image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=600',
-  },
-  {
-    id: '6',
-    sku: 'SKU-SEG-006',
-    name: 'Câmera de Segurança IP Bullet 4K Po-E',
-    description: 'Monitoramento noturno infravermelho com inteligência artificial de movimento.',
-    price: 540.00,
-    category: 'Segurança',
-    image: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&q=80&w=600',
+    warranty: '3 Anos',
+    specs: { interface: 'Porta PoE+ 2.5GbE', power: 'PoE+ 802.3at', speed: 'Até 3000 Mbps', type: 'Wi-Fi 6 (802.11ax)' }
   },
   {
     id: '7',
@@ -63,14 +64,7 @@ export const products: Product[] = [
     price: 8900.00,
     category: 'Hardware',
     image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=600',
-  },
-  {
-    id: '8',
-    sku: 'SKU-AUT-008',
-    name: 'Impressora Térmica de Etiquetas de Código de Barras',
-    description: 'Alta velocidade de impressão para expedição e etiquetagem de galpão.',
-    price: 1150.00,
-    category: 'Automação',
-    image: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&q=80&w=600',
-  },
+    warranty: '3 Anos On-site ProSupport',
+    specs: { interface: 'Quad-Core Xeon / 16GB', power: 'Fonte Redundante 450W', speed: 'PCIe 4.0', type: 'Servidor Torre' }
+  }
 ];
