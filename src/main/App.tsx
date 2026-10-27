@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { products } from "../data/products";
+import { useProducts } from "../hooks/useProducts";
 import { useCartStore } from "../store/useCartStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { CartDrawer } from "../componentes/CartDrawer";
@@ -13,6 +13,7 @@ import { useCompareStore } from "../store/useCompareStore";
 import { CompareModal } from "../componentes/CompareModal";
 
 function App() {
+  const { data: products = [], isPending, isError, error } = useProducts();
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const { addToCart, totalItems } = useCartStore();
   const { user, openLoginModal, logout } = useAuthStore();
@@ -27,6 +28,9 @@ function App() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
+
+  if (isPending) return <p>Carregando produtos...</p>;
+  if (isError) return <p>Erro: {error.message}</p>;
 
   const categories = Array.from(new Set(products.map((p) => p.category)));
   const isLight = theme === "light";
