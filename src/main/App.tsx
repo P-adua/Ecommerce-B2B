@@ -13,7 +13,7 @@ import { useCompareStore } from "../store/useCompareStore";
 import { CompareModal } from "../componentes/CompareModal";
 
 function App() {
-  const { data: products = [], isPending, isError, error } = useProducts();
+  const { data: products = [], isPending, isError, refetch } = useProducts();
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const { addToCart, totalItems } = useCartStore();
   const { user, openLoginModal, logout } = useAuthStore();
@@ -28,9 +28,6 @@ function App() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
-
-  if (isPending) return <p>Carregando produtos...</p>;
-  if (isError) return <p>Erro: {error.message}</p>;
 
   const categories = Array.from(new Set(products.map((p) => p.category)));
   const isLight = theme === "light";
@@ -181,6 +178,24 @@ function App() {
           </div>
         </div>
 
+        {isPending && (
+          <p
+            className={`text-sm mb-6 ${isLight ? "text-zinc-500" : "text-zinc-400"}`}
+          >
+            Carregando produtos...
+          </p>
+        )}
+        {isError && (
+          <div className="mb-6 flex items-center gap-3 text-sm text-red-500">
+            <span>Não foi possível carregar os produtos.</span>
+            <button
+              onClick={() => refetch()}
+              className="underline font-semibold cursor-pointer"
+            >
+              Tentar novamente
+            </button>
+          </div>
+        )}
         {/* Vitrine de Produtos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => {
@@ -306,7 +321,7 @@ function App() {
           })}
         </div>
 
-        {filteredProducts.length === 0 && (
+        {!isPending && !isError && filteredProducts.length === 0 && (
           <div className="text-center py-32 text-zinc-400">
             <p className="text-4xl mb-3">🔍</p>
             <p className="text-base font-medium">
